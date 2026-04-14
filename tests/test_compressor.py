@@ -1,8 +1,8 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
-from inference_toolkit.compression.compressor import ContextCompressor
+from inference_toolkit.compression.compressor import ContextCompressor  # noqa: F401
 
 
 def _make_messages(n_turns: int, include_system: bool = True) -> list[dict]:

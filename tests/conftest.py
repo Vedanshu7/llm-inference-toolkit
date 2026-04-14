@@ -1,9 +1,9 @@
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
 
-from inference_toolkit.cache.store import CacheEntry, InMemoryStore
 from inference_toolkit.cache.semantic_cache import SemanticCache
+from inference_toolkit.cache.store import InMemoryStore
 from inference_toolkit.compression.compressor import ContextCompressor
 
 

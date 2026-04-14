@@ -1,10 +1,9 @@
 import time
 
-import numpy as np
 import pytest
 
+from inference_toolkit.cache.semantic_cache import SemanticCache  # noqa: F401
 from inference_toolkit.cache.store import CacheEntry, InMemoryStore
-from inference_toolkit.cache.semantic_cache import SemanticCache
 from tests.conftest import make_embedding
 
 

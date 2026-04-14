@@ -12,7 +12,9 @@ router = APIRouter()
 
 
 @router.post("/v1/chat/completions")
-async def chat_completions(request: Request, body: api_models.ChatCompletionRequest) -> JSONResponse:
+async def chat_completions(
+    request: Request, body: api_models.ChatCompletionRequest
+) -> JSONResponse:
     """
     Handle a chat completion request with semantic caching and context compression.
 
