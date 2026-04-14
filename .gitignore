@@ -8,3 +8,4 @@ dist/
 *.egg-info/
 .ruff_cache/
 uv.lock
+code_style.md
