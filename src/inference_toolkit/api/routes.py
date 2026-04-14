@@ -59,7 +59,7 @@ async def chat_completions(
     except Exception as exc:
         _LOG.warning("[%s] Context compression failed, continuing without: %s", request_id, exc)
     # Build kwargs and call the LLM via litellm.
-    kwargs: dict = {"model": body.model, "messages": messages_dicts}
+    kwargs: dict[str, object] = {"model": body.model, "messages": messages_dicts}
     if body.temperature is not None:
         kwargs["temperature"] = body.temperature
     if body.max_tokens is not None:

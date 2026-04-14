@@ -10,6 +10,7 @@ from inference_toolkit.compression.compressor import ContextCompressor
 def make_embedding(value: float, size: int = 8) -> list[float]:
     """Create a normalised embedding pointing in a given direction."""
     import numpy as np
+
     v = np.zeros(size)
     v[0] = value
     v[1] = 1.0 - abs(value)
@@ -35,6 +36,7 @@ def compressor() -> ContextCompressor:
 @pytest.fixture
 def mock_embed(monkeypatch):
     """Patch litellm.aembedding to return deterministic embeddings."""
+
     async def _fake_embed(model, input, **kwargs):  # noqa: A002
         result = MagicMock()
         result.data = [{"embedding": make_embedding(0.9)}]
@@ -47,6 +49,7 @@ def mock_embed(monkeypatch):
 @pytest.fixture
 def mock_completion(monkeypatch):
     """Patch litellm.acompletion to return a fixed assistant message."""
+
     async def _fake_completion(model, messages, **kwargs):
         result = MagicMock()
         result.choices = [MagicMock()]

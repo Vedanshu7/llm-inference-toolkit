@@ -1,5 +1,6 @@
 import logging
 import os
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 import litellm
@@ -28,7 +29,7 @@ litellm.drop_params = True
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
     Manage startup and shutdown of shared app state (cache, compressor).
     """
@@ -66,6 +67,7 @@ def main() -> None:
     Launch the uvicorn server as an installed script entry point.
     """
     import uvicorn
+
     uvicorn.run("inference_toolkit.api.main:app", host="0.0.0.0", port=8000, reload=False)
 
 

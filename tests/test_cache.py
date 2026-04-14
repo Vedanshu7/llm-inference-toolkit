@@ -23,6 +23,7 @@ async def test_cache_hit_on_similar_prompt(cache, monkeypatch):
     async def _fake_embed(model, input, **kwargs):  # noqa: A002
         nonlocal call_count
         from unittest.mock import MagicMock
+
         result = MagicMock()
         result.data = [{"embedding": stored_embedding if call_count == 0 else query_embedding}]
         call_count += 1
@@ -44,6 +45,7 @@ async def test_cache_miss_on_dissimilar_prompt(cache, monkeypatch):
         async def _fake(model, input, **kwargs):  # noqa: A002
             nonlocal idx
             from unittest.mock import MagicMock
+
             result = MagicMock()
             result.data = [{"embedding": embeddings[idx]}]
             idx = min(idx + 1, len(embeddings) - 1)

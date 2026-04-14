@@ -37,8 +37,7 @@ class Settings(BaseSettings):
             f"got '{self.cache_similarity_threshold}'"
         )
         assert 0.0 < self.compression_threshold <= 1.0, (
-            f"compression_threshold must be in (0.0, 1.0], "
-            f"got '{self.compression_threshold}'"
+            f"compression_threshold must be in (0.0, 1.0], got '{self.compression_threshold}'"
         )
         assert self.cache_ttl_seconds > 0, (
             f"cache_ttl_seconds must be positive, got '{self.cache_ttl_seconds}'"

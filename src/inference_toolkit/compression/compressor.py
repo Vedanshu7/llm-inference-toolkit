@@ -90,7 +90,7 @@ class ContextCompressor:
             max_tokens=512,
             temperature=0.0,
         )
-        return response.choices[0].message.content.strip()
+        return str(response.choices[0].message.content).strip()
 
     @staticmethod
     def _get_context_limit(model: str) -> int:

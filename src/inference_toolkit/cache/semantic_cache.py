@@ -111,7 +111,7 @@ class SemanticCache:
             model=settings.embedding_model,
             input=[text],
         )
-        return response.data[0]["embedding"]
+        return list(response.data[0]["embedding"])
 
     @staticmethod
     def _find_best_match(
