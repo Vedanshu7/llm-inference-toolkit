@@ -20,6 +20,8 @@ class CacheEntry:
     embedding: list[float]
     hits: int = 0
     created_at: float = field(default_factory=time.time)
+    model: str = ""
+    cost_usd: float = 0.0
 
 
 @runtime_checkable

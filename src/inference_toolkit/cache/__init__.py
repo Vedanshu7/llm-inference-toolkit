@@ -2,7 +2,13 @@
 Cache package — semantic response cache backed by Redis or in-memory storage.
 """
 
-from inference_toolkit.cache.semantic_cache import CacheStats, SemanticCache
+from inference_toolkit.cache.analytics import (
+    CacheAnalytics,
+    CacheEntryDetail,
+    Cluster,
+    SavingsReport,
+)
+from inference_toolkit.cache.semantic_cache import CacheHit, CacheStats, SemanticCache
 from inference_toolkit.cache.store import (
     CacheEntry,
     CacheStore,
@@ -12,11 +18,16 @@ from inference_toolkit.cache.store import (
 )
 
 __all__ = [
+    "CacheAnalytics",
     "CacheEntry",
+    "CacheEntryDetail",
+    "CacheHit",
     "CacheStats",
     "CacheStore",
+    "Cluster",
     "InMemoryStore",
     "RedisStore",
+    "SavingsReport",
     "SemanticCache",
     "get_store",
 ]

@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     compression_threshold: float = 0.80
     compression_model: str = "gpt-4o-mini"
 
+    # Cost guardrails (0.0 = disabled).
+    max_cost_usd_per_conversation: float = 0.0
+    cost_guardrail_threshold: float = 0.80
+
     def validate_settings(self) -> None:
         """
         Assert that all settings are within valid ranges.
@@ -41,6 +45,13 @@ class Settings(BaseSettings):
         )
         assert self.cache_ttl_seconds > 0, (
             f"cache_ttl_seconds must be positive, got '{self.cache_ttl_seconds}'"
+        )
+        assert 0.0 <= self.max_cost_usd_per_conversation, (
+            f"max_cost_usd_per_conversation must be >= 0, "
+            f"got '{self.max_cost_usd_per_conversation}'"
+        )
+        assert 0.0 < self.cost_guardrail_threshold <= 1.0, (
+            f"cost_guardrail_threshold must be in (0.0, 1.0], got '{self.cost_guardrail_threshold}'"
         )
         if not self.openai_api_key and not self.anthropic_api_key:
             _LOG.warning(

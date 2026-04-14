@@ -7,9 +7,11 @@ import litellm
 from fastapi import FastAPI
 
 import inference_toolkit.api.routes as api_routes
+import inference_toolkit.cache.analytics as cache_analytics_module
 import inference_toolkit.cache.semantic_cache as semantic_cache_module
 import inference_toolkit.cache.store as cache_store
 import inference_toolkit.compression.compressor as compressor_module
+import inference_toolkit.conversation.manager as conversation_module
 from inference_toolkit.config import settings
 
 logging.basicConfig(
@@ -36,6 +38,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     store = await cache_store.get_store(settings.redis_url)
     app.state.cache = semantic_cache_module.SemanticCache(store)
     app.state.compressor = compressor_module.ContextCompressor()
+    app.state.analytics = cache_analytics_module.CacheAnalytics()
+    app.state.conv_store = conversation_module.ConversationStore()
     backend = "Redis" if settings.redis_url else "in-memory"
     _LOG.info("Inference toolkit started (cache backend=%s).", backend)
     yield

@@ -1,5 +1,6 @@
 import hashlib
 import logging
+import time
 from dataclasses import dataclass
 
 import litellm
@@ -9,6 +10,25 @@ import inference_toolkit.cache.store as cache_store
 from inference_toolkit.config import settings
 
 _LOG = logging.getLogger(__name__)
+
+
+@dataclass
+class CacheHit:
+    """
+    Wrap a cache entry with the metadata explaining why it was returned.
+    """
+
+    entry: cache_store.CacheEntry
+    matched_prompt: str
+    similarity_score: float
+    cache_age_seconds: float
+
+    @property
+    def response(self) -> str:
+        """
+        Return the cached response text for convenience.
+        """
+        return self.entry.response
 
 
 @dataclass
@@ -28,7 +48,7 @@ class SemanticCache:
     Cache LLM responses and serve hits for semantically similar prompts.
 
     Use embedding-based cosine similarity to match incoming prompts against
-    stored ones, returning cached responses when the similarity score exceeds
+    stored ones, returning a `CacheHit` when the similarity score exceeds
     the configured threshold.
     """
 
@@ -37,12 +57,12 @@ class SemanticCache:
         self._total_requests = 0
         self._cache_hits = 0
 
-    async def get(self, prompt: str) -> cache_store.CacheEntry | None:
+    async def get(self, prompt: str) -> CacheHit | None:
         """
         Look up a semantically similar prompt in the cache.
 
         :param prompt: the user prompt to look up
-        :return: matching cache entry if similarity exceeds threshold, else None
+        :return: CacheHit with match metadata if similarity exceeds threshold, else None
         """
         self._total_requests += 1
         entries = await self._store.get_all()
@@ -55,20 +75,40 @@ class SemanticCache:
             self._cache_hits += 1
             key = self._make_key(best_entry.prompt)
             await self._store.increment_hits(key)
+            age = time.time() - best_entry.created_at
             _LOG.debug("Cache hit (score=%.4f) for prompt: %s", best_score, prompt[:60])
-            return best_entry
+            return CacheHit(
+                entry=best_entry,
+                matched_prompt=best_entry.prompt,
+                similarity_score=round(best_score, 6),
+                cache_age_seconds=round(age, 2),
+            )
         _LOG.debug("Cache miss (best_score=%.4f) for prompt: %s", best_score, prompt[:60])
         return None
 
-    async def set(self, prompt: str, response: str) -> None:
+    async def set(
+        self,
+        prompt: str,
+        response: str,
+        model: str = "",
+        cost_usd: float = 0.0,
+    ) -> None:
         """
-        Embed a prompt and persist it alongside its response.
+        Embed a prompt and persist it alongside its response and cost metadata.
 
         :param prompt: the user prompt that was answered
         :param response: the assistant response to cache
+        :param model: the LLM model that produced the response
+        :param cost_usd: estimated cost of the LLM call in USD
         """
         embedding = await self._embed(prompt)
-        entry = cache_store.CacheEntry(prompt=prompt, response=response, embedding=embedding)
+        entry = cache_store.CacheEntry(
+            prompt=prompt,
+            response=response,
+            embedding=embedding,
+            model=model,
+            cost_usd=cost_usd,
+        )
         await self._store.set(
             key=self._make_key(prompt),
             entry=entry,
