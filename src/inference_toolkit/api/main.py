@@ -5,33 +5,40 @@ from contextlib import asynccontextmanager
 import litellm
 from fastapi import FastAPI
 
-from inference_toolkit.api.routes import router
-from inference_toolkit.cache.semantic_cache import SemanticCache
-from inference_toolkit.cache.store import get_store
-from inference_toolkit.compression.compressor import ContextCompressor
+import inference_toolkit.api.routes as api_routes
+import inference_toolkit.cache.semantic_cache as semantic_cache_module
+import inference_toolkit.cache.store as cache_store
+import inference_toolkit.compression.compressor as compressor_module
 from inference_toolkit.config import settings
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s — %(message)s")
-logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s — %(message)s",
+)
+_LOG = logging.getLogger(__name__)
 
-# Pass API keys to litellm via environment (litellm reads these automatically)
+# Register API keys with litellm via environment variables.
 if settings.openai_api_key:
     os.environ.setdefault("OPENAI_API_KEY", settings.openai_api_key)
 if settings.anthropic_api_key:
     os.environ.setdefault("ANTHROPIC_API_KEY", settings.anthropic_api_key)
 
-litellm.drop_params = True  # silently ignore unsupported params per provider
+# Silently drop unsupported parameters per provider rather than raising.
+litellm.drop_params = True
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    store = await get_store(settings.redis_url)
-    app.state.cache = SemanticCache(store)
-    app.state.compressor = ContextCompressor()
+    """
+    Manage startup and shutdown of shared app state (cache, compressor).
+    """
+    store = await cache_store.get_store(settings.redis_url)
+    app.state.cache = semantic_cache_module.SemanticCache(store)
+    app.state.compressor = compressor_module.ContextCompressor()
     backend = "Redis" if settings.redis_url else "in-memory"
-    logger.info("Inference toolkit started (cache backend=%s)", backend)
+    _LOG.info("Inference toolkit started (cache backend=%s).", backend)
     yield
-    logger.info("Inference toolkit shutting down")
+    _LOG.info("Inference toolkit shutting down.")
 
 
 app = FastAPI(
@@ -41,15 +48,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app.include_router(router)
+app.include_router(api_routes.router)
 
 
 @app.get("/health")
 async def health() -> dict[str, str]:
+    """
+    Return a liveness check payload.
+
+    :return: dict with status key
+    """
     return {"status": "ok"}
 
 
 def main() -> None:
+    """
+    Launch the uvicorn server as an installed script entry point.
+    """
     import uvicorn
     uvicorn.run("inference_toolkit.api.main:app", host="0.0.0.0", port=8000, reload=False)
 
