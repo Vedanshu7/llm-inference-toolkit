@@ -149,7 +149,9 @@ class Conversation:
         :return: restored Conversation instance
         """
         raw_messages = data.get("messages", [])
-        messages: list[dict[str, str]] = list(raw_messages) if isinstance(raw_messages, list) else []
+        messages: list[dict[str, str]] = (
+            list(raw_messages) if isinstance(raw_messages, list) else []
+        )
         raw_cost = data.get("cumulative_cost_usd", 0.0)
         raw_ts = data.get("created_at", time.time())
         return cls(
