@@ -25,7 +25,7 @@ QUESTIONS = [
     "What is the main city of France?",         # similar — should hit cache
 ]
 
-MODEL = "gpt-4o-mini"
+MODEL = "claude-haiku-4-5-20251001"
 
 
 async def main() -> None:

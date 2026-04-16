@@ -144,14 +144,39 @@ class SemanticCache:
         """
         Generate an embedding vector for the given text.
 
+        Uses fastembed for models prefixed with ``fastembed/`` (local, no API key
+        required), and litellm for everything else.
+
         :param text: text to embed
         :return: embedding as a list of floats
         """
+        if settings.embedding_model.startswith("fastembed/"):
+            return await self._embed_fastembed(text)
         response = await litellm.aembedding(
             model=settings.embedding_model,
             input=[text],
         )
         return list(response.data[0]["embedding"])
+
+    async def _embed_fastembed(self, text: str) -> list[float]:
+        """
+        Generate an embedding using the local fastembed library.
+
+        :param text: text to embed
+        :return: embedding as a list of floats
+        """
+        import asyncio
+
+        from fastembed import TextEmbedding
+
+        model_name = settings.embedding_model[len("fastembed/"):]
+        if not hasattr(self, "_fastembed_model"):
+            self._fastembed_model = TextEmbedding(model_name)
+        loop = asyncio.get_event_loop()
+        embeddings = await loop.run_in_executor(
+            None, lambda: list(self._fastembed_model.embed([text]))
+        )
+        return embeddings[0].tolist()
 
     @staticmethod
     def _find_best_match(

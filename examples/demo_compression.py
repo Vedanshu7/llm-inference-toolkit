@@ -18,7 +18,9 @@ from inference_toolkit.compression.compressor import ContextCompressor
 from inference_toolkit.config import settings
 
 # Use a small context model so compression triggers quickly in the demo
-MODEL = "gpt-4o-mini"
+MODEL = "claude-haiku-4-5-20251001"
+# Force a tiny context window so the compressor kicks in during the demo
+DEMO_CONTEXT_LIMIT = 500  # tokens — artificially low to trigger compression
 
 CONVERSATION_TURNS = [
     "My name is Alex and I'm building a FastAPI app.",
@@ -50,8 +52,10 @@ async def main() -> None:
 
         token_count_before = litellm.token_counter(model=MODEL, messages=messages)
 
-        # Compress if needed
-        messages = await compressor.compress(messages, MODEL)
+        # Compress if needed — patch context limit so compression triggers in demo
+        import unittest.mock as mock
+        with mock.patch.object(compressor, "_get_context_limit", return_value=DEMO_CONTEXT_LIMIT):
+            messages = await compressor.compress(messages, MODEL)
 
         token_count_after = litellm.token_counter(model=MODEL, messages=messages)
 

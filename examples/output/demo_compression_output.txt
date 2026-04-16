@@ -1,0 +1,69 @@
+============================================================
+Context Compression Demo
+Model: claude-haiku-4-5-20251001 | Compression threshold: 80%
+============================================================
+
+[Turn 01] Tokens:   32 →   32
+  User : My name is Alex and I'm building a FastAPI app.
+  Bot  : Hi Alex! Great! I'd be happy to help you with your FastAPI app...
+
+[Turn 02] Tokens:  169 →  169
+  User : I'm using PostgreSQL as my database.
+  Bot  : Great choice! PostgreSQL + FastAPI is a solid stack...
+
+[Turn 03] Tokens:  297 →  297
+  User : I need to implement user authentication with JWT tokens.
+  Bot  : JWT Authentication with FastAPI + PostgreSQL — here's a solid implementation approach...
+
+[Turn 04] Tokens:  431 →  431
+  User : The app also needs rate limiting on the API endpoints.
+  Bot  : Rate Limiting for FastAPI — here are the best approaches...
+
+[Turn 05] Tokens:  683 →  254  ← COMPRESSED  (63% token reduction)
+  User : I'm deploying to AWS using ECS Fargate.
+  Bot  : Rate Limiting for FastAPI on AWS ECS Fargate — here's the production-ready setup...
+
+[Turn 06] Tokens:  391 →  391
+  User : I use GitHub Actions for CI/CD.
+  Bot  : GitHub Actions CI/CD for FastAPI → ECS Fargate — here's the complete workflow...
+
+[Turn 07] Tokens:  531 →  300  ← COMPRESSED  (43% token reduction)
+  User : I need to support multi-tenancy with separate schemas per tenant.
+  Bot  : Multi-Tenancy with Separate Schemas per Tenant in FastAPI...
+
+[Turn 08] Tokens:  437 →  437
+  User : The frontend is built with Next.js and uses React Query.
+  Bot  : Multi-Tenancy FastAPI + Next.js/React Query Setup...
+
+[Turn 09] Tokens:  772 →  293  ← COMPRESSED  (62% token reduction)
+  User : I'm using Redis for session storage and caching.
+  Bot  : Multi-Tenancy FastAPI + Next.js with Redis Session Storage & Caching...
+
+[Turn 10] Tokens:  428 →  266  ← COMPRESSED  (38% token reduction)
+  User : Security is important — I need input validation with Pydantic.
+  Bot  : Multi-Tenancy FastAPI + Next.js with Redis, Security & Pydantic Validation...
+
+[Turn 11] Tokens:  395 →  395
+  User : I also need structured logging with correlation IDs.
+  Bot  : Multi-Tenancy FastAPI + Next.js with Redis, Security, Validation & Structured Logging...
+
+[Turn 12] Tokens:  522 →  522
+  User : What tech stack have I described so far?
+  Bot  : Based on the summary provided, here's the tech stack you've described:
+         Backend: FastAPI, PostgreSQL, JWT auth, rate limiting, Redis, Pydantic, structured logging
+         Infrastructure: AWS ECS Fargate, GitHub Actions CI/CD
+         Frontend: Next.js, React Query
+         Architecture: Multi-tenancy with separate schemas per tenant
+
+============================================================
+Final message count : 5    (vs 25 without compression)
+Final token count   : 731
+============================================================
+
+Notes:
+- Compression triggered 4 times across 12 turns
+- Peak token reduction: 63% (Turn 05: 683 → 254)
+- Final conversation preserved full tech stack context despite compression
+- Model: claude-haiku-4-5-20251001
+- Compression model: claude-haiku-4-5-20251001
+- Demo context limit: 500 tokens (artificially low to trigger compression in demo)
