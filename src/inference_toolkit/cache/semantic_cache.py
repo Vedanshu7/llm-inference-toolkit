@@ -169,7 +169,7 @@ class SemanticCache:
 
         from fastembed import TextEmbedding
 
-        model_name = settings.embedding_model[len("fastembed/"):]
+        model_name = settings.embedding_model[len("fastembed/") :]
         if not hasattr(self, "_fastembed_model"):
             self._fastembed_model = TextEmbedding(model_name)
         loop = asyncio.get_event_loop()
