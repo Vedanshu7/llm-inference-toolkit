@@ -176,7 +176,7 @@ class SemanticCache:
         embeddings = await loop.run_in_executor(
             None, lambda: list(self._fastembed_model.embed([text]))
         )
-        return embeddings[0].tolist()
+        return list(embeddings[0].tolist())
 
     @staticmethod
     def _find_best_match(
